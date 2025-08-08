@@ -1,6 +1,6 @@
 import { useEffect, useRef ,useContext, useLayoutEffect} from 'react';
 
-import rough from 'roughjs';
+import rough from 'roughjs/bundled/rough.esm.js';
 import boardContext from '../../store/board-context';
 import { TOOL_ACTION_TYPES, TOOL_ITEMS } from '../../constants';
 import toolboxContext from '../../store/toolbox-context';
