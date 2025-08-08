@@ -1,6 +1,6 @@
 # 🧠 Whiteboard App
 
-An interactive, browser-based whiteboard built with **React** & **Canvas API**.  
+An interactive, browser-based whiteboard built with **React**, **Canvas API**, and **Rough.js**.  
 Draw, annotate, and export your creations — all directly in the browser.  
 
 [![Live Demo](https://img.shields.io/badge/Try%20it%20Live-Vercel-brightgreen)](https://white-board-rosy.vercel.app/)
@@ -22,12 +22,13 @@ Draw, annotate, and export your creations — all directly in the browser.
 
 ## ✨ Features
 
-- 🖊 Freehand drawing (pen, brush)
-- 📏 Shape tools: rectangle, circle, arrow
-- 🔤 Text input anywhere on the board
-- 🎨 Color palette & stroke size control
-- 💾 Export canvas as PNG
-- 🧹 Eraser & clear board *(if included)*
+- 🖊 **Freehand Drawing** — Pen and brush tools for smooth sketching  
+- 📏 **Shape Tools** — Rectangle, circle, and arrow with Rough.js for a natural, hand-drawn look  
+- 🔤 **Text Annotations** — Place text anywhere on the canvas  
+- 🎨 **Custom Styling** — Full color palette and stroke size control  
+- 🧹 **Eraser Tool** — Remove specific parts of the drawing  
+- ↩️ **Undo & Redo** — Available via buttons or keyboard shortcuts  
+- 💾 **Export** — Save your board as a high-quality PNG image
 
 ---
 
@@ -37,6 +38,7 @@ Draw, annotate, and export your creations — all directly in the browser.
 |------|---------|
 | **React** | Frontend framework |
 | **HTML5 Canvas API** | Drawing logic |
+| **Rough.js** | Hand-drawn style for shapes |
 | **Tailwind CSS** | Styling |
 | **Vercel** | Deployment |
 
@@ -44,18 +46,18 @@ Draw, annotate, and export your creations — all directly in the browser.
 
 ## 🛣 Roadmap
 
-- [ ] User authentication (JWT/Auth0)
-- [ ] Multi-user collaboration (WebSockets)
-- [ ] Real-time chat alongside drawing
-- [ ] AI features: sketch recognition, “Imagine this” generation
-- [ ] Save/load boards from a database
+- [ ] User authentication (JWT/Auth0)  
+- [ ] Multi-user collaboration (WebSockets)  
+- [ ] Real-time chat alongside drawing  
+- [ ] AI features: sketch recognition, “Imagine this” generation  
+- [ ] Save/load boards from a database  
 
 ---
 
 ## 📦 Run Locally
 
 ```bash
-git clone https://github.com/YOURUSERNAME/WhiteBoard.git
+git clone https://github.com/Praphul12/WhiteBoard.git
 cd WhiteBoard
 npm install
 npm start
