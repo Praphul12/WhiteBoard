@@ -10,11 +10,11 @@
          text-gray-700 text-lg 
          border border-gray-300 
          cursor-pointer 
-         transition-all duration-200 ease-in-out;
+         transition-colors duration-200 ease-in-out; /* use transition-colors for color-only transition */
 }
 
 .toolItem:hover {
-  @apply bg-gray-100;
+  @apply bg-gray-100 text-gray-900 border-gray-400; /* slightly darker on hover for bg, text, and border */
 }
 
 .toolItem.active {

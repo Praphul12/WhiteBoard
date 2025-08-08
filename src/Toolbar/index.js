@@ -16,28 +16,28 @@ import { FaDownload } from "react-icons/fa";
 const Toolbar = () => {
 
   const {activeToolItem,handleActiveToolItemClick,undo,redo} = useContext(boardContext);
-   
+
    const handleDownload = () => {
      const canvas = document.getElementById("canvas");
      const ctx = canvas.getContext("2d");
-   
+
      // Save current drawing
      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-   
+
      // Draw white background
      ctx.globalCompositeOperation = "destination-over";
      ctx.fillStyle = "white";
      ctx.fillRect(0, 0, canvas.width, canvas.height);
-   
+
      // Get data URL (JPEG or PNG)
      const data = canvas.toDataURL("image/jpeg", 0.9);
-   
+
      // Trigger download
      const anchor = document.createElement("a");
      anchor.href = data;
      anchor.download = "board.jpg";
      anchor.click();
-   
+
      // Restore original drawing with transparency
      ctx.clearRect(0, 0, canvas.width, canvas.height);
      ctx.putImageData(imageData, 0, 0);
@@ -45,43 +45,43 @@ const Toolbar = () => {
 
   return (
     <div className={classes.container}>
-      <div 
+      <div title='Brush'
         className={cx(classes.toolItem,{[classes.active]:activeToolItem ===TOOL_ITEMS.BRUSH})}
         onClick={()=>handleActiveToolItemClick(TOOL_ITEMS.BRUSH)}><FaPaintBrush/>
        </div>
-      <div 
+      <div title='line'
         className={cx(classes.toolItem,{[classes.active]:activeToolItem ===TOOL_ITEMS.LINE})}
         onClick={()=>handleActiveToolItemClick(TOOL_ITEMS.LINE)}><FaSlash/>
        </div>
-      <div 
+      <div title='Rectangle'
          className={cx(classes.toolItem,{[classes.active]:activeToolItem === TOOL_ITEMS.RECTANGLE})}
          onClick={()=>handleActiveToolItemClick(TOOL_ITEMS.RECTANGLE)}><LuRectangleHorizontal/>
       </div>
-      <div 
+      <div title='Circle'
          className={cx(classes.toolItem,{[classes.active]:activeToolItem === TOOL_ITEMS.CIRCLE})}
          onClick={()=>handleActiveToolItemClick(TOOL_ITEMS.CIRCLE)}><FaRegCircle/>
       </div>
-      <div 
+      <div title='arrow'
          className={cx(classes.toolItem,{[classes.active]:activeToolItem === TOOL_ITEMS.ARROW})}
          onClick={()=>handleActiveToolItemClick(TOOL_ITEMS.ARROW)}><FaArrowRight/>
       </div>
-      <div 
+      <div title='Eraser'
          className={cx(classes.toolItem,{[classes.active]:activeToolItem === TOOL_ITEMS.ERASER})}
          onClick={()=>handleActiveToolItemClick(TOOL_ITEMS.ERASER)}><FaEraser />
       </div>
-      <div 
+      <div title='Text'
          className={cx(classes.toolItem,{[classes.active]:activeToolItem === TOOL_ITEMS.TEXT})}
          onClick={()=>handleActiveToolItemClick(TOOL_ITEMS.TEXT)}><FaPenAlt />
       </div>
-      <div 
+      <div title='Undo'
          className={classes.toolItem}
          onClick={()=> undo()}><IoIosUndo  />
       </div>
-      <div 
+      <div title='Redo'
          className={classes.toolItem}
          onClick={()=> redo()}><IoIosRedo  />
       </div>
-      <div 
+      <div title='Download'
          className={classes.toolItem}
          onClick={()=> handleDownload()}><FaDownload  />
       </div>
