@@ -9,14 +9,14 @@ Draw, annotate, and export your creations — all directly in the browser.
 
 ## 🎥 Demo
 
-![Drawing Tools & Export](demo/draw-tools.gif)  
+![Drawing Tools & Export](Demo/draw-tools.gif)  
 *Tool selection, drawing shapes, changing colors, and exporting the final image.*
 
 ---
 
 ## 🖼 Screenshot
 
-![Full App UI](demo/full-app.png)
+![Full App UI](Demo/full-app.png)
 
 ---
 
