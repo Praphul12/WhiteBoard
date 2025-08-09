@@ -3,7 +3,7 @@
 An interactive, browser-based whiteboard built with **React** & **Canvas API**.  
 Draw, annotate, and export your creations — all directly in the browser.  
 
-[![Live Demo](https://img.shields.io/badge/Try%20it%20Live-Vercel-brightgreen)](https://white-board-rosy.vercel.app/)
+[![Live Demo](https://img.shields.io/badge/Try%20it%20Live-Vercel-brightgreen)](https://white-board-rosy.vercel.app)
 
 ---
 
