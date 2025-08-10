@@ -1,4 +1,4 @@
-# 🧠 Whiteboard App
+# 🎨 Whiteboard App
 
 An interactive, browser-based whiteboard built with **React** & **Canvas API**.  
 Draw, annotate, and export your creations — all directly in the browser.  
