@@ -34,7 +34,7 @@ function Dashboard({ onLogout }) {
   const handleCreate = async () => {
     if (!newName.trim()) return showNotification("Name required", "error");
     try {
-      const res = await fetch("https://collaboard-backend-4zw3.onrender.com/create", {
+      const res = await fetch("https://collaboard-backend-4zw3.onrender.com/canvas/create", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ name: newName }),
@@ -71,7 +71,7 @@ function Dashboard({ onLogout }) {
   const handleShare = async (id) => {
     if (!shareEmail.trim()) return showNotification("Email required", "error");
     try {
-      const res = await fetch(`https://collaboard-backend-4zw3.onrender.com/${id}`, {
+      const res = await fetch(`https://collaboard-backend-4zw3.onrender.com/canvas/${id}`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ shareEmail }),
