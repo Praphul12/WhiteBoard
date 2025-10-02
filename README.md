@@ -73,7 +73,7 @@ MongoDB (Users & Boards)
 
 - **POST** `/register` – Create a new user  
 - **POST** `/login` – Log in a user
-- - **GET** `/profile` – GET JWT and authorize user 
+- **GET** `/profile` – GET JWT and authorize user 
 - **GET** `/canvas/` – Get all boards for the authenticated user  
 - **POST** `/canvas/create` – Create a new canvas  
 - **PUT** `/canvas/update` – Update a canvas by ID  
