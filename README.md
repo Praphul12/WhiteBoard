@@ -10,7 +10,7 @@ Draw, annotate, save, and collaborate in real time — directly in the browser.
 
 ## 🎥 Demo
 
-![Collaboration Demo](Demo/collab-demo.gif)  
+![Board Demo](Demo/draw-tools.gif)  
 *Real-time multi-user collaboration: drawing, annotating, saving, and loading boards.*
 
 ---
