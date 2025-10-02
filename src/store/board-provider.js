@@ -133,7 +133,7 @@ const BoardProvider = ({ children }) => {
 
     async function fetchCanvas() {
       try {
-        const res = await fetch(`https://collaboard-backend-4zw3.onrender.com/${id}`, {
+        const res = await fetch(`https://collaboard-backend-4zw3.onrender.com/cnavas/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
