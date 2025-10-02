@@ -1,4 +1,4 @@
-# 🧠 CollaBoard
+# 🎨 CollaBoard
 
 A **full-stack collaborative whiteboard** built with **React**, **Node.js**, **Express**, **MongoDB**, and **Canvas API**.  
 Draw, annotate, save, and collaborate in real time — directly in the browser.
