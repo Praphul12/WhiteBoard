@@ -8,7 +8,7 @@
         if (!canvasId || !token) return;
     
         try {
-          await fetch("https://collaboard-backend-4zw3.onrender.com/update", {
+          await fetch("https://collaboard-backend-4zw3.onrender.com/canvas/update", {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",
