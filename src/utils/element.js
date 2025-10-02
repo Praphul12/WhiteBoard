@@ -19,7 +19,7 @@ export const createRoughElement = (id,x1,y1,x2,y2,{type,stroke,fill,size})=> {
     {
         options.stroke = stroke;
     }
-
+    
     if(fill)
     {
         options.fill = fill;

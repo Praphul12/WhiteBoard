@@ -11,6 +11,7 @@ const boardContext = createContext(
         elements : [],
         history:[[]],
         index:0,
+        loadSavedCanvas: ()=>{},
         boardMouseMoveHandler : ()=>{},
         textAreaBlur : ()=>{},
         undo : ()=>{},

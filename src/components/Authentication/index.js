@@ -1,9 +1,12 @@
 import React, { useState } from "react";
-import "./index.css"; // Import the CSS file
+import "./index.css"; // renamed for clarity
 
-export default function Auth({onLogin}) {
+export default function Auth({ onLogin }) {
   const [mode, setMode] = useState("login");
   const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [message, setMessage] = useState(null);
+  const [status, setStatus] = useState(""); // success | error
+
   const isSignup = mode === "signup";
 
   const handleChange = (e) => {
@@ -13,8 +16,8 @@ export default function Auth({onLogin}) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const url = isSignup
-      ? "http://localhost:5000/register"
-      : "http://localhost:5000/login";
+      ? "https://collaboard-backend-4zw3.onrender.com/register"
+      : "https://collaboard-backend-4zw3.onrender.com/login";
 
     try {
       const res = await fetch(url, {
@@ -22,29 +25,37 @@ export default function Auth({onLogin}) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
-    //   const token  = res.headers.get("authorization");
+
       const data = await res.json();
 
       if (res.ok) {
-        console.log(data);
-        if (data.token) {
-            localStorage.setItem("token", data.token);
-            onLogin(data.token);
+        if (data.token && data.user) {
+          // console.log(data.user);
+          localStorage.setItem("token", data.token);
+          localStorage.setItem("userId", data.user.userId);
+          localStorage.setItem("userName", data.user.name);
+          onLogin(data.token);
         }
-
-        
+        setStatus("success");
+        setMessage(isSignup ? "Signup successful. Welcome!" : "Login successful.");
         setForm({ name: "", email: "", password: "" });
       } else {
-        alert(data.error || "Something went wrong");
+        setStatus("error");
+        setMessage(data.error || "Something went wrong.");
       }
     } catch (err) {
       console.error(err);
-      alert("Network error");
+      setStatus("error");
+      setMessage("Network error. Please try again.");
     }
   };
 
   return (
     <div className="auth-page">
+      {/* App Branding */}
+      <h1 className="app-title">CollaBoard</h1>
+
+      {/* Mode Toggle */}
       <div className="auth-toggle">
         <button
           className={mode === "login" ? "active" : ""}
@@ -60,14 +71,20 @@ export default function Auth({onLogin}) {
         </button>
       </div>
 
+      {/* Auth Form */}
       <div className="auth-container">
-        <h2>{isSignup ? "Sign Up" : "Login"}</h2>
+        <h2>{isSignup ? "Create Account" : "Welcome Back"}</h2>
+
+        {message && (
+          <div className={`auth-message ${status}`}>{message}</div>
+        )}
+
         <form onSubmit={handleSubmit}>
           {isSignup && (
             <input
               type="text"
               name="name"
-              placeholder="Name"
+              placeholder="Full Name"
               value={form.name}
               onChange={handleChange}
               required

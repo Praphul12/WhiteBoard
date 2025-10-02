@@ -4,9 +4,19 @@
   flex-direction: column;
   align-items: center;
   min-height: 100vh;
-  background-color: #f3f4f6;
+  background: linear-gradient(135deg, #3b82f6, #e7e6e9);
   padding: 2rem;
-  font-family: sans-serif;
+  font-family: "Inter", sans-serif;
+  color: #111827;
+}
+
+/* Branding */
+.app-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 2rem;
+  letter-spacing: 1px;
 }
 
 /* Toggle buttons */
@@ -17,22 +27,24 @@
 }
 
 .auth-toggle button {
-  padding: 0.5rem 1.5rem;
+  padding: 0.6rem 1.5rem;
   border: none;
   border-radius: 0.5rem;
   font-weight: bold;
   cursor: pointer;
-  background-color: #e5e7eb;
-  transition: background-color 0.2s;
+  background-color: rgba(255, 255, 255, 0.3);
+  color: white;
+  transition: background-color 0.2s, transform 0.1s;
 }
 
 .auth-toggle button.active {
-  background-color: #3b82f6;
-  color: white;
+  background-color: white;
+  color: #3b82f6;
 }
 
 .auth-toggle button:hover:not(.active) {
-  background-color: #d1d5db;
+  background-color: rgba(255, 255, 255, 0.6);
+  transform: translateY(-2px);
 }
 
 /* Form container */
@@ -42,16 +54,36 @@
   padding: 2rem;
   background-color: white;
   border-radius: 1rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
   text-align: center;
 }
 
-/* Form elements */
 .auth-container h2 {
-  margin-bottom: 1.5rem;
-  font-size: 1.75rem;
+  margin-bottom: 1.2rem;
+  font-size: 1.6rem;
+  color: #111827;
 }
 
+/* Notifications */
+.auth-message {
+  margin-bottom: 1rem;
+  padding: 0.8rem;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.auth-message.success {
+  background-color: #dcfce7;
+  color: #166534;
+  border: 1px solid #22c55e;
+}
+.auth-message.error {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #ef4444;
+}
+
+/* Form elements */
 .auth-container form {
   display: flex;
   flex-direction: column;
@@ -59,7 +91,7 @@
 }
 
 .auth-container input {
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1rem;
   border: 1px solid #d1d5db;
   border-radius: 0.5rem;
   font-size: 1rem;
@@ -74,16 +106,17 @@
 
 /* Submit button */
 .auth-container button[type="submit"] {
-  padding: 0.5rem 1rem;
+  padding: 0.7rem 1rem;
   border: none;
   border-radius: 0.5rem;
   background-color: #3b82f6;
   color: white;
   font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, transform 0.1s;
 }
 
 .auth-container button[type="submit"]:hover {
   background-color: #2563eb;
+  transform: translateY(-2px);
 }

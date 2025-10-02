@@ -1,39 +1,40 @@
-import React, { useCallback, useReducer } from 'react'
-import boardContext from './board-context'
-
-import { TOOL_ITEMS,BOARD_ACTIONS,TOOL_ACTION_TYPES } from '../constants';
-import { createRoughElement, getSvgPathFromStroke ,isPointNearElement} from '../utils/element';
-
+import React, { useCallback, useEffect, useReducer } from 'react';
+import boardContext from './board-context';
+import { TOOL_ITEMS, BOARD_ACTIONS, TOOL_ACTION_TYPES } from '../constants';
+import { createRoughElement, getSvgPathFromStroke, isPointNearElement } from '../utils/element';
 import getStroke from 'perfect-freehand';
+import { useParams } from 'react-router-dom';
+import { io } from 'socket.io-client';
 
-// import { type } from '@testing-library/user-event/dist/type';
-
-
-
+// Initialize socket outside component (singleton)
+const socket = io("https://collaboard-backend-4zw3.onrender.com", {
+  auth: { token: localStorage.getItem("token") }
+});
 
 const initialBoardState = {
-    activeToolItem: TOOL_ITEMS.BRUSH,
-    toolActionType : TOOL_ACTION_TYPES.NONE,
-    elements:[],
-    history:[[]],
-    index:0
+  activeToolItem: TOOL_ITEMS.BRUSH,
+  toolActionType: TOOL_ACTION_TYPES.NONE,
+  elements: [],
+  history: [[]],
+  index: 0,
+  loading: true,
+};
 
-}
-
+// Reducer
 const boardReducer = (state, action) => {
   switch (action.type) {
-    
-    case BOARD_ACTIONS.CHANGE_TOOL:
+    case BOARD_ACTIONS.SET_ELEMENTS:
       return {
         ...state,
-        activeToolItem: action.payload.tool,
+        elements: action.payload.elements,
+        history: [action.payload.elements],
+        index: 0,
+        loading: false,
       };
-    
+    case BOARD_ACTIONS.CHANGE_TOOL:
+      return { ...state, activeToolItem: action.payload.tool };
     case BOARD_ACTIONS.CHANGE_ACTION_TYPE:
-      return{
-        ...state,
-        toolActionType:action.payload.actionType
-      }
+      return { ...state, toolActionType: action.payload.actionType };
     case BOARD_ACTIONS.DRAW_DOWN: {
       const { clientX, clientY, stroke, fill, size } = action.payload;
       const newElement = createRoughElement(
@@ -44,14 +45,12 @@ const boardReducer = (state, action) => {
         clientY,
         { type: state.activeToolItem, stroke, fill, size }
       );
-
       return {
         ...state,
         toolActionType: state.activeToolItem === TOOL_ITEMS.TEXT ? TOOL_ACTION_TYPES.WRITING : TOOL_ACTION_TYPES.DRAWING,
         elements: [...state.elements, newElement],
       };
     }
-
     case BOARD_ACTIONS.DRAW_MOVE: {
       const { clientX, clientY } = action.payload;
       const newElements = [...state.elements];
@@ -62,236 +61,176 @@ const boardReducer = (state, action) => {
         case TOOL_ITEMS.LINE:
         case TOOL_ITEMS.RECTANGLE:
         case TOOL_ITEMS.CIRCLE:
-        case TOOL_ITEMS.ARROW: {
-          const newElement = createRoughElement(
-            index,
-            x1,
-            y1,
-            clientX,
-            clientY,
-            { type: state.activeToolItem, stroke, fill, size }
-          );
-          newElements[index] = newElement;
-
-          return {
-            ...state,
-            elements: newElements,
-          };
-        }
-
-        case TOOL_ITEMS.BRUSH: {
+        case TOOL_ITEMS.ARROW:
+          newElements[index] = createRoughElement(index, x1, y1, clientX, clientY, { type, stroke, fill, size });
+          return { ...state, elements: newElements };
+        case TOOL_ITEMS.BRUSH:
           newElements[index].points = [...newElements[index].points, { x: clientX, y: clientY }];
-          console.log(newElements[index].size);
-          newElements[index].path = new Path2D(
-            getSvgPathFromStroke(getStroke(newElements[index].points))
-          );
-          return {
-            ...state,
-            elements: newElements,
-          };
-        }
-
+          newElements[index].path = new Path2D(getSvgPathFromStroke(getStroke(newElements[index].points)));
+          return { ...state, elements: newElements };
         default:
-          break;
+          return state;
       }
-
-      return state;
     }
-
-    case BOARD_ACTIONS.ERASE:{
-        const {clientX,clientY} = action.payload;
-        const newElements = [...state.elements];
-        const newElement = newElements.filter((element)=>{
-          console.log(isPointNearElement(element, clientX, clientY));
-          return !isPointNearElement(element, {pointX:clientX,pointY: clientY});
-        })
-        
-        const newHistory = state.history.slice(0,state.index+1);
-        newHistory.push(newElement);
-        return{
-          ...state,
-          elements: newElement,
-          history : newHistory,
-          index : state.index +1,
-        }
+    case BOARD_ACTIONS.ERASE: {
+      const { clientX, clientY } = action.payload;
+      const newElements = state.elements.filter((element) => !isPointNearElement(element, { pointX: clientX, pointY: clientY }));
+      const newHistory = state.history.slice(0, state.index + 1);
+      newHistory.push(newElements);
+      return { ...state, elements: newElements, history: newHistory, index: state.index + 1 };
     }
-
-    case BOARD_ACTIONS.CHANGE_TEXT:{
-      const index = state.elements.length-1;
+    case BOARD_ACTIONS.CHANGE_TEXT: {
+      const index = state.elements.length - 1;
       const newElements = [...state.elements];
       newElements[index].text = action.payload.text;
-      
-      const newHistory = state.history.slice(0,state.index+1);
+      const newHistory = state.history.slice(0, state.index + 1);
       newHistory.push(newElements);
-    
-    return{
-      ...state,
-      toolActionType : TOOL_ACTION_TYPES.NONE,
-      elements: newElements,
-      history : newHistory,
-      index: state.index +1,
+      return { ...state, toolActionType: TOOL_ACTION_TYPES.NONE, elements: newElements, history: newHistory, index: state.index + 1 };
     }
-  }
-  case BOARD_ACTIONS.DRAW_UP:
-    {
+    case BOARD_ACTIONS.DRAW_UP: {
       const elementsCopy = [...state.elements];
-      const newHistory = state.history.slice(0,state.index+1);
+      const newHistory = state.history.slice(0, state.index + 1);
       newHistory.push(elementsCopy);
-      return{
-        ...state,
-        history: newHistory,
-        index : state.index + 1, 
-      }
+      return { ...state, history: newHistory, index: state.index + 1 };
     }
-
-  case BOARD_ACTIONS.UNDO:
-    {
-      if(state.index <= 0) return state
-      return{
-        ...state,
-        elements : state.history[state.index - 1],
-        index : state.index - 1
-      }
-    }
-  case BOARD_ACTIONS.REDO:
-    {
-      if(state.index >= state.history.length - 1)return state;
-      return{
-        ...state,
-        elements : state.history[state.index + 1],
-        index : state.index + 1
-      }
-    }
-
+    case BOARD_ACTIONS.UNDO:
+      if (state.index <= 0) return state;
+      return { ...state, elements: state.history[state.index - 1], index: state.index - 1 };
+    case BOARD_ACTIONS.REDO:
+      if (state.index >= state.history.length - 1) return state;
+      return { ...state, elements: state.history[state.index + 1], index: state.index + 1 };
     default:
       return state;
   }
 };
 
-  const BoardProvider = ({children}) => {
-    const [boardState,dispatchBoardAction] = useReducer(boardReducer,initialBoardState);
-  
-//   const [activeToolItem,setActiveToolItem] = useState("LINE")
-//   const [elements, setElements] = useState([])
-
-  
-
-  const handleActiveToolItemClick = ((tool)=>{
-    // console.log("hello");
-    dispatchBoardAction({type : BOARD_ACTIONS.CHANGE_TOOL,
-        payload:{
-            tool,
-        },
-    });
-
-});
-
-
-const handleMouseDown = (event,toolBoxState)=>{
-    if(boardState.toolActionType === TOOL_ACTION_TYPES.WRITING)return;
-    const {clientX,clientY} = event;
-    if(boardState.activeToolItem === TOOL_ITEMS.ERASER){
-      dispatchBoardAction({
-        type: BOARD_ACTIONS.CHANGE_ACTION_TYPE,
-        payload:{
-          actionType:TOOL_ACTION_TYPES.ERASING
-        },
-      })
+// Hydrate elements for rendering
+const hydrateElements = (fetchedElements) => {
+  return fetchedElements.map((el, index) => {
+    switch (el.type) {
+      case TOOL_ITEMS.BRUSH:
+        el.path = new Path2D(getSvgPathFromStroke(getStroke(el.points)));
+        return el;
+      case TOOL_ITEMS.LINE:
+      case TOOL_ITEMS.RECTANGLE:
+      case TOOL_ITEMS.CIRCLE:
+      case TOOL_ITEMS.ARROW:
+        el.roughElement = createRoughElement(index, el.x1, el.y1, el.x2, el.y2, { type: el.type, stroke: el.stroke, fill: el.fill, size: el.size }).roughElement;
+        return el;
+      default:
+        return el;
     }
-    else
-    {
-
-      dispatchBoardAction({type:BOARD_ACTIONS.DRAW_DOWN,
-          payload:{
-              clientX,
-              clientY,
-              stroke: toolBoxState[boardState.activeToolItem]?.stroke,
-              fill: toolBoxState[boardState.activeToolItem]?.fill,
-              size : toolBoxState[boardState.activeToolItem]?.size,
-          },
-      });
-    }
+  });
 };
-const undoboardHandler = useCallback(()=>{
-  dispatchBoardAction({
-    type:BOARD_ACTIONS.UNDO
-  })
-},[]);
 
-const redoBoardhandler = useCallback(()=>{
-  dispatchBoardAction({
-    type:BOARD_ACTIONS.REDO
-  })
-},[]);
+const BoardProvider = ({ children }) => {
+  const [boardState, dispatchBoardAction] = useReducer(boardReducer, initialBoardState);
+  const { id } = useParams();
 
+  // Fetch canvas and join socket room
+  useEffect(() => {
+    const token = localStorage.getItem("token");
 
-const textAreaBlurhandler = (text)=>{
-    dispatchBoardAction({
-      type:BOARD_ACTIONS.CHANGE_TEXT,
-      payload :{
-        text,
-        // stroke : toolBoxState[boardState.activeToolItem]?.stroke,
-        // size: toolBoxState[boardState.activeToolItem]?.size
+    async function fetchCanvas() {
+      try {
+        const res = await fetch(`http://localhost:5000/canvas/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        const hydrated = hydrateElements(data.elements);
+        dispatchBoardAction({ type: BOARD_ACTIONS.SET_ELEMENTS, payload: { elements: hydrated, name: data.name || "" } });
+        socket.emit("joinCanvas", id);
+      } catch (err) {
+        console.error("Failed to fetch canvas:", err);
       }
-    })
-
-}
-const handleMouseMove = (event)=>{
-    const {clientX,clientY} = event;
-    if(boardState.toolActionType === TOOL_ACTION_TYPES.WRITING)return;
-    if(boardState.toolActionType === TOOL_ACTION_TYPES.DRAWING)
-    {
-
-      dispatchBoardAction({type:BOARD_ACTIONS.DRAW_MOVE,
-          payload:{
-              clientX,clientY
-          },
-      });
     }
-    else if(boardState.toolActionType === TOOL_ACTION_TYPES.ERASING)
-    {
-        dispatchBoardAction({
-          type: BOARD_ACTIONS.ERASE,
-          payload:{
-            clientX,
-            clientY
-          }})
-    }
-};
 
-const handleMouseUp = (event)=> {
+    if (id) fetchCanvas();
 
-    if(boardState.toolActionType === TOOL_ACTION_TYPES.WRITING)return;
-    if(boardState.toolActionType === TOOL_ACTION_TYPES.DRAWING)
-    {
-      dispatchBoardAction({
-        type: BOARD_ACTIONS.DRAW_UP,
-      });
-    }
-    dispatchBoardAction({type:BOARD_ACTIONS.CHANGE_ACTION_TYPE,
-        payload:{
-            actionType: TOOL_ACTION_TYPES.NONE,
-        },
+    // Listen for updates from other users
+    socket.on("canvasUpdated", (allElements) => {
+      dispatchBoardAction({ type: BOARD_ACTIONS.SET_ELEMENTS, payload: { elements: hydrateElements(allElements) } });
     });
-};
 
-const boardContextValue = 
-    {activeToolItem : boardState.activeToolItem,
+    return () => {
+      socket.off("canvasUpdated");
+      // Do not disconnect singleton socket
+    };
+  }, [id]);
+
+  // Tool actions
+  const handleActiveToolItemClick = (tool) =>
+    dispatchBoardAction({ type: BOARD_ACTIONS.CHANGE_TOOL, payload: { tool } });
+
+  const handleMouseDown = (event, toolBoxState) => {
+    if (boardState.toolActionType === TOOL_ACTION_TYPES.WRITING) return;
+    const { clientX, clientY } = event;
+    if (boardState.activeToolItem === TOOL_ITEMS.ERASER) {
+      dispatchBoardAction({ type: BOARD_ACTIONS.CHANGE_ACTION_TYPE, payload: { actionType: TOOL_ACTION_TYPES.ERASING } });
+    } else {
+      dispatchBoardAction({
+        type: BOARD_ACTIONS.DRAW_DOWN,
+        payload: {
+          clientX,
+          clientY,
+          stroke: toolBoxState[boardState.activeToolItem]?.stroke,
+          fill: toolBoxState[boardState.activeToolItem]?.fill,
+          size: toolBoxState[boardState.activeToolItem]?.size,
+        },
+      });
+    }
+  };
+
+  const handleMouseMove = (event) => {
+    const { clientX, clientY } = event;
+    if (boardState.toolActionType === TOOL_ACTION_TYPES.WRITING) return;
+
+    if (boardState.toolActionType === TOOL_ACTION_TYPES.DRAWING) {
+      dispatchBoardAction({ type: BOARD_ACTIONS.DRAW_MOVE, payload: { clientX, clientY } });
+    } else if (boardState.toolActionType === TOOL_ACTION_TYPES.ERASING) {
+      dispatchBoardAction({ type: BOARD_ACTIONS.ERASE, payload: { clientX, clientY } });
+    }
+
+    // Send all elements on every change
+    socket.emit("updateCanvas", { canvasId: id, data: boardState.elements });
+  };
+
+  const handleMouseUp = (event) => {
+    if (boardState.toolActionType === TOOL_ACTION_TYPES.WRITING) return;
+    if (boardState.toolActionType === TOOL_ACTION_TYPES.DRAWING) {
+      dispatchBoardAction({ type: BOARD_ACTIONS.DRAW_UP });
+    }
+    dispatchBoardAction({ type: BOARD_ACTIONS.CHANGE_ACTION_TYPE, payload: { actionType: TOOL_ACTION_TYPES.NONE } });
+
+    // Send all elements
+    socket.emit("updateCanvas", { canvasId: id, data: boardState.elements });
+  };
+
+  const textAreaBlurhandler = (text) => {
+    const index = boardState.elements.length - 1;
+    const updatedElement = { ...boardState.elements[index], text };
+    dispatchBoardAction({ type: BOARD_ACTIONS.CHANGE_TEXT, payload: { text } });
+
+    socket.emit("updateCanvas", { canvasId: id, data: boardState.elements });
+  };
+
+  const undoboardHandler = useCallback(() => dispatchBoardAction({ type: BOARD_ACTIONS.UNDO }), []);
+  const redoBoardhandler = useCallback(() => dispatchBoardAction({ type: BOARD_ACTIONS.REDO }), []);
+
+  const boardContextValue = {
+    activeToolItem: boardState.activeToolItem,
     handleActiveToolItemClick,
-    elements:boardState.elements,
-    toolActionType : boardState.toolActionType,
+    elements: boardState.elements,
+    toolActionType: boardState.toolActionType,
     handleMouseDown,
     handleMouseMove,
     handleMouseUp,
     textAreaBlur: textAreaBlurhandler,
     undo: undoboardHandler,
-    redo: redoBoardhandler};
+    redo: redoBoardhandler,
+  };
 
-  return (
-    <boardContext.Provider value = {boardContextValue}>
-        {children}
-    </boardContext.Provider>
-  )
-}
+  return <boardContext.Provider value={boardContextValue}>{children}</boardContext.Provider>;
+};
 
-export default BoardProvider
+export default BoardProvider;

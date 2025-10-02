@@ -13,10 +13,10 @@ export const BOARD_ACTIONS = {
     DRAW_DOWN : "DRAW_DOWN",
     DRAW_MOVE : "DRAW_MOVE",
     DRAW_UP : "DRAW_UP",
+    UNDO : "UNDO",
     ERASE : "ERASE",
     CHANGE_ACTION_TYPE: " CHANGE-ACTION_TYPE",
     CHANGE_TEXT: "CHANGE_TEXT",
-    UNDO : "UNDO",
     REDO : "REDO"
 };
 
