@@ -16,7 +16,6 @@
             },
             body: JSON.stringify({
               canvasId,
-              name: "",
               elements: elements,
             }),
           });
