@@ -71,7 +71,7 @@ function Dashboard({ onLogout }) {
   const handleShare = async (id) => {
     if (!shareEmail.trim()) return showNotification("Email required", "error");
     try {
-      const res = await fetch(`https://collaboard-backend-4zw3.onrender.com/canvas/${id}`, {
+      const res = await fetch(`https://collaboard-backend-4zw3.onrender.com/canvas/share/${id}`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ shareEmail }),
