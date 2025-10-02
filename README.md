@@ -68,3 +68,16 @@ Backend (Node.js + Express + Socket.io)
        │
        ▼
 MongoDB (Users & Boards)
+```
+## 🛣 API Endpoints
+
+- **POST** `/register` – Create a new user  
+- **POST** `/login` – Log in a user
+- - **GET** `/profile` – GET JWT and authorize user 
+- **GET** `/canvas/` – Get all boards for the authenticated user  
+- **POST** `/canvas/create` – Create a new canvas  
+- **PUT** `/canvas/update` – Update a canvas by ID  
+- **POST** `/canvas/share/:id` – Share a canvas by ID  
+- **POST** `/canvas/delete` – Delete the canvas (if owner)  
+
+> Real-time updates are handled by **Socket.io** and are not available via REST endpoints.
